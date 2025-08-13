@@ -31,6 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
     getAllNotes();
   }
 
+  void toggleNoteCompletion(int index) async {
+    var box = await Hive.openBox<NoteModel>('notesBox');
+    var noteModel = notes[index];
+    noteModel.isCompleted = !noteModel.isCompleted;
+    await box.putAt(index, noteModel);
+    getAllNotes();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,43 +77,55 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Color(notes[index].color),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        notes[index].title,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      notes[index].createdAt.toString().split(' ')[0],
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
+                Checkbox(
+                  value: notes[index].isCompleted,
+                  onChanged: (value) {
+                    toggleNoteCompletion(index);
+                  },
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        notes[index].body,
-                        style: TextStyle(color: Colors.white),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              notes[index].title,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            notes[index].createdAt.toString().split(' ')[0],
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        deleteNote(index);
-                      },
-                      icon: Icon(Icons.delete, color: Colors.white),
-                    ),
-                  ],
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              notes[index].body,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              deleteNote(index);
+                            },
+                            icon: Icon(Icons.delete, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

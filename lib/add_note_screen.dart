@@ -32,6 +32,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       createdAt: DateTime.now(),
       color: colors[selectedColor!].value,
     );
+    print('Is Completed ${noteModel.isCompleted}');
     await box.add(noteModel);
     Fluttertoast.showToast(msg: 'The note created successfully');
     Navigator.pop(context, true);

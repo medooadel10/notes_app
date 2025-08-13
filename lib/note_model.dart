@@ -13,11 +13,14 @@ class NoteModel {
   final DateTime createdAt;
   @HiveField(3)
   final int color;
+  @HiveField(4)
+  bool isCompleted;
 
   NoteModel({
     required this.title,
     required this.body,
     required this.createdAt,
     required this.color,
+    this.isCompleted = false,
   });
 }
