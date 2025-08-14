@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app/home_screen.dart';
+import 'package:notes_app/features/home/logic/home_provider.dart';
+import 'package:notes_app/features/home/ui/home_screen.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -16,7 +18,12 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 3)).then((_) {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(
+          builder: (context) => ChangeNotifierProvider(
+            create: (context) => HomeProvider()..getAllNotes(),
+            child: HomeScreen(),
+          ),
+        ),
         (route) => false,
       );
     });
