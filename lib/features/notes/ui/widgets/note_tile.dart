@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:notes_app/features/add_note/ui/add_note_screen.dart';
-import 'package:notes_app/features/home/logic/home_provider.dart';
+import 'package:notes_app/features/notes/logic/notes_provider.dart';
 import 'package:provider/provider.dart';
 
-class HomeNoteTile extends StatelessWidget {
+class NoteTile extends StatelessWidget {
   final int index;
-  const HomeNoteTile({Key? key, required this.index}) : super(key: key);
+  const NoteTile({Key? key, required this.index}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<HomeProvider>();
+    final provider = context.read<NotesProvider>();
     return GestureDetector(
       onTap: () async {
         final result = await Navigator.push(

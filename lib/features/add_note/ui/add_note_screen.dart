@@ -4,8 +4,8 @@ import 'package:hive/hive.dart';
 import 'package:notes_app/features/add_note/logic/add_note_provider.dart';
 import 'package:notes_app/core/widgets/custom_button.dart';
 import 'package:notes_app/features/add_note/ui/widgets/add_note_folders.dart';
-import 'package:notes_app/features/home/logic/home_provider.dart';
-import 'package:notes_app/features/home/models/note_model.dart';
+import 'package:notes_app/features/notes/logic/notes_provider.dart';
+import 'package:notes_app/features/notes/models/note_model.dart';
 import 'package:provider/provider.dart';
 
 class AddNoteScreen extends StatelessWidget {

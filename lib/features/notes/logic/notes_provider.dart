@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:notes_app/features/home/models/note_model.dart';
+import 'package:notes_app/features/notes/models/note_model.dart';
 
-class HomeProvider extends ChangeNotifier {
+class NotesProvider extends ChangeNotifier {
   List<NoteModel> notes = [];
 
   void getAllNotes() async {

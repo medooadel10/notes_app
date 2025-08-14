@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 import 'package:notes_app/features/folders/models/folder_model.dart';
-import 'package:notes_app/features/home/models/note_model.dart';
+import 'package:notes_app/features/notes/models/note_model.dart';
 
 class AddNoteProvider extends ChangeNotifier {
   final titleController = TextEditingController();
