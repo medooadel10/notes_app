@@ -3,7 +3,9 @@ import 'package:hive/hive.dart';
 import 'package:notes_app/note_model.dart';
 
 class AddNoteScreen extends StatefulWidget {
-  const AddNoteScreen({Key? key}) : super(key: key);
+  NoteModel? noteModel;
+  int? index;
+  AddNoteScreen({Key? key, this.noteModel, this.index}) : super(key: key);
 
   @override
   _AddNoteScreenState createState() => _AddNoteScreenState();
@@ -31,6 +33,32 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     );
     await box.add(note);
     Navigator.pop(context, true);
+  }
+
+  void updateNote() async {
+    final box = await Hive.openBox<NoteModel>('notes');
+    NoteModel note = NoteModel(
+      title: titleController.text,
+      description: descriptionController.text,
+      createdAt: widget.noteModel!.createdAt,
+      color: colors[selectedColor].value,
+    );
+    await box.putAt(widget.index!, note);
+    Navigator.pop(context, true);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    titleController.text = widget.noteModel?.title ?? '';
+    descriptionController.text = widget.noteModel?.description ?? '';
+    Color color = colors.singleWhere(
+      (element) => element.value == widget.noteModel?.color,
+      orElse: () => colors[0],
+    );
+    setState(() {
+      selectedColor = colors.indexOf(color);
+    });
   }
 
   @override
@@ -97,7 +125,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
               ElevatedButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
-                    addNote();
+                    if (widget.noteModel != null) {
+                      updateNote();
+                    } else {
+                      addNote();
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -106,7 +138,10 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text('Add Note', style: TextStyle(color: Colors.white)),
+                child: Text(
+                  widget.noteModel == null ? 'Add Note' : 'Edit Note',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),

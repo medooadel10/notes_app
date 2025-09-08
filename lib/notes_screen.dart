@@ -60,50 +60,64 @@ class _NotesScreenState extends State<NotesScreen> {
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         itemBuilder: (context, index) {
           final note = notes[index];
-          return Container(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-            decoration: BoxDecoration(
-              color: Color(note.color),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Checkbox(
-                  value: note.isCompleted,
-                  onChanged: (value) {
-                    toggleCompletion(index);
-                  },
+          return GestureDetector(
+            onTap: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      AddNoteScreen(noteModel: notes[index], index: index),
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        note.title,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25,
-                        ),
-                      ),
-                      Text(
-                        note.description,
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      Text(
-                        note.createdAt.split(' ')[0],
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
+              );
+              if (result != null && result) {
+                getData();
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Color(note.color),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Checkbox(
+                    value: note.isCompleted,
+                    onChanged: (value) {
+                      toggleCompletion(index);
+                    },
                   ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    deleteNote(index);
-                  },
-                  icon: Icon(Icons.delete, color: Colors.white),
-                ),
-              ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          note.title,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                          ),
+                        ),
+                        Text(
+                          note.description,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Text(
+                          note.createdAt.split(' ')[0],
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      deleteNote(index);
+                    },
+                    icon: Icon(Icons.delete, color: Colors.white),
+                  ),
+                ],
+              ),
             ),
           );
         },
