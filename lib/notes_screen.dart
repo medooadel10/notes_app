@@ -12,11 +12,13 @@ class NotesScreen extends StatefulWidget {
 }
 
 class _NotesScreenState extends State<NotesScreen> {
-  List<NoteModel> notes = [];
+  List<NoteModel> originalNotes = [];
+  List<NoteModel>? filteredNotes;
+
   void getData() async {
     final box = await Hive.openBox<NoteModel>('notes');
     setState(() {
-      notes = box.values.toList();
+      originalNotes = box.values.toList();
     });
   }
 
@@ -28,7 +30,7 @@ class _NotesScreenState extends State<NotesScreen> {
 
   void toggleCompletion(int index) async {
     final box = await Hive.openBox<NoteModel>('notes');
-    final note = notes[index];
+    final note = originalNotes[index];
     note.isCompleted = !note.isCompleted;
     await box.putAt(index, note);
     getData();
@@ -69,74 +71,148 @@ class _NotesScreenState extends State<NotesScreen> {
           ),
         ],
       ),
-      body: ListView.separated(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-        itemBuilder: (context, index) {
-          final note = notes[index];
-          return GestureDetector(
-            onTap: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      AddNoteScreen(noteModel: notes[index], index: index),
-                ),
-              );
-              if (result != null && result) {
-                getData();
-              }
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  left: BorderSide(color: Color(note.color), width: 3),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: note.isCompleted,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        child: Column(
+          spacing: 16,
+          children: [
+            Row(
+              spacing: 10,
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      hintText: 'Search for note here...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    keyboardType: TextInputType.text,
                     onChanged: (value) {
-                      toggleCompletion(index);
+                      if (value.isEmpty) {
+                        setState(() {
+                          filteredNotes = null;
+                        });
+                        return;
+                      }
+                      List<NoteModel> notes = originalNotes
+                          .where(
+                            (element) =>
+                                element.title.contains(value) ||
+                                element.description.contains(value),
+                          )
+                          .toList();
+                      setState(() {
+                        filteredNotes = notes;
+                      });
                     },
                   ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          note.title,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25,
-                          ),
+                ),
+                DropdownMenuFormField<bool?>(
+                  onSelected: (value) {
+                    if (value == null) {
+                      setState(() {
+                        filteredNotes = null;
+                      });
+                      return;
+                    }
+                    final notes = originalNotes
+                        .where((element) => element.isCompleted == value)
+                        .toList();
+                    setState(() {
+                      filteredNotes = notes;
+                    });
+                  },
+                  dropdownMenuEntries: [
+                    DropdownMenuEntry(value: null, label: 'All'),
+                    DropdownMenuEntry(value: true, label: 'Completed'),
+                    DropdownMenuEntry(value: false, label: 'Not Completed'),
+                  ],
+                ),
+              ],
+            ),
+            Expanded(
+              child: ListView.separated(
+                itemBuilder: (context, index) {
+                  final note = filteredNotes == null
+                      ? originalNotes[index]
+                      : filteredNotes![index];
+                  return GestureDetector(
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AddNoteScreen(noteModel: note, index: index),
                         ),
-                        Text(note.description),
-                        Text(note.createdAt.split(' ')[0]),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          deleteNote(index);
-                        },
-                        icon: Icon(Icons.delete),
+                      );
+                      if (result != null && result) {
+                        getData();
+                      }
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 16,
                       ),
-                      if (note.folder != null)
-                        Icon(Icons.folder, color: Color(note.folder!.color)),
-                    ],
-                  ),
-                ],
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border(
+                          left: BorderSide(color: Color(note.color), width: 3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Checkbox(
+                            value: note.isCompleted,
+                            onChanged: (value) {
+                              toggleCompletion(index);
+                            },
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  note.title,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 25,
+                                  ),
+                                ),
+                                Text(note.description),
+                                Text(note.createdAt.split(' ')[0]),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  deleteNote(index);
+                                },
+                                icon: Icon(Icons.delete),
+                              ),
+                              if (note.folder != null)
+                                Icon(
+                                  Icons.folder,
+                                  color: Color(note.folder!.color),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                separatorBuilder: (context, index) => SizedBox(height: 20),
+                itemCount: filteredNotes == null
+                    ? originalNotes.length
+                    : filteredNotes!.length,
               ),
             ),
-          );
-        },
-        separatorBuilder: (context, index) => SizedBox(height: 20),
-        itemCount: notes.length,
+          ],
+        ),
       ),
     );
   }
