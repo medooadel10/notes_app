@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:notes_app/add_note_screen.dart';
+import 'package:notes_app/folders_screen.dart';
 import 'package:notes_app/note_model.dart';
 
 class NotesScreen extends StatefulWidget {
@@ -48,14 +49,26 @@ class _NotesScreenState extends State<NotesScreen> {
             context,
             MaterialPageRoute(builder: (context) => AddNoteScreen()),
           );
-          print(result);
           if (result != null && result) {
             getData();
           }
         },
         child: Icon(Icons.add),
       ),
-      appBar: AppBar(title: Text('Notes')),
+      appBar: AppBar(
+        title: Text('Notes'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FoldersScreen()),
+              );
+            },
+            icon: Icon(Icons.folder),
+          ),
+        ],
+      ),
       body: ListView.separated(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         itemBuilder: (context, index) {
@@ -76,8 +89,10 @@ class _NotesScreenState extends State<NotesScreen> {
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
               decoration: BoxDecoration(
-                color: Color(note.color),
-                borderRadius: BorderRadius.circular(12),
+                color: Colors.white,
+                border: Border(
+                  left: BorderSide(color: Color(note.color), width: 3),
+                ),
               ),
               child: Row(
                 children: [
@@ -94,34 +109,33 @@ class _NotesScreenState extends State<NotesScreen> {
                         Text(
                           note.title,
                           style: TextStyle(
-                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 25,
                           ),
                         ),
-                        Text(
-                          note.description,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        Text(
-                          note.createdAt.split(' ')[0],
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        Text(note.description),
+                        Text(note.createdAt.split(' ')[0]),
                       ],
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      deleteNote(index);
-                    },
-                    icon: Icon(Icons.delete, color: Colors.white),
+                  Column(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          deleteNote(index);
+                        },
+                        icon: Icon(Icons.delete),
+                      ),
+                      if (note.folder != null)
+                        Icon(Icons.folder, color: Color(note.folder!.color)),
+                    ],
                   ),
                 ],
               ),
             ),
           );
         },
-        separatorBuilder: (context, index) => SizedBox(height: 10),
+        separatorBuilder: (context, index) => SizedBox(height: 20),
         itemCount: notes.length,
       ),
     );

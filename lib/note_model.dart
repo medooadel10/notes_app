@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:notes_app/folder_model.dart';
 part 'note_model.g.dart';
 
 @HiveType(typeId: 0)
@@ -13,6 +14,8 @@ class NoteModel extends HiveObject {
   final int color;
   @HiveField(4)
   bool isCompleted;
+  @HiveField(5)
+  final FolderModel? folder;
 
   NoteModel({
     required this.title,
@@ -20,5 +23,6 @@ class NoteModel extends HiveObject {
     required this.createdAt,
     required this.color,
     this.isCompleted = false,
+    this.folder,
   });
 }

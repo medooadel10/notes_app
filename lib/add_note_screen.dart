@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:notes_app/folder_model.dart';
 import 'package:notes_app/note_model.dart';
 
 class AddNoteScreen extends StatefulWidget {
@@ -22,7 +23,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-
+  List<FolderModel> folders = [];
+  FolderModel? selectedFolder;
   void addNote() async {
     final box = await Hive.openBox<NoteModel>('notes');
     NoteModel note = NoteModel(
@@ -30,6 +32,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       description: descriptionController.text,
       createdAt: DateTime.now().toString(),
       color: colors[selectedColor].value,
+      folder: selectedFolder,
     );
     await box.add(note);
     Navigator.pop(context, true);
@@ -42,6 +45,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       description: descriptionController.text,
       createdAt: widget.noteModel!.createdAt,
       color: colors[selectedColor].value,
+      folder: selectedFolder,
     );
     await box.putAt(widget.index!, note);
     Navigator.pop(context, true);
@@ -58,6 +62,17 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
     );
     setState(() {
       selectedColor = colors.indexOf(color);
+    });
+    setState(() {
+      selectedFolder = widget.noteModel?.folder;
+    });
+    getFolders();
+  }
+
+  void getFolders() async {
+    final box = await Hive.openBox<FolderModel>('folders');
+    setState(() {
+      folders = box.values.toList();
     });
   }
 
@@ -141,6 +156,48 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                 child: Text(
                   widget.noteModel == null ? 'Add Note' : 'Edit Note',
                   style: TextStyle(color: Colors.white),
+                ),
+              ),
+              SizedBox(
+                height: 70,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) => GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedFolder = folders[index];
+                      });
+                    },
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Opacity(
+                          opacity: folders[index] == selectedFolder ? 0.5 : 1,
+                          child: Column(
+                            spacing: 5,
+                            children: [
+                              Icon(
+                                Icons.folder,
+                                color: Color(folders[index].color),
+                                size: 30,
+                              ),
+                              Text(
+                                folders[index].name,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (selectedFolder == folders[index])
+                          Icon(Icons.check, color: Colors.black, size: 50),
+                      ],
+                    ),
+                  ),
+                  separatorBuilder: (context, index) => SizedBox(width: 10),
+                  itemCount: folders.length,
                 ),
               ),
             ],
