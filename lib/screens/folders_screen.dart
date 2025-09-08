@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:notes_app/screeens/add_folder_screen.dart';
+import 'package:notes_app/screens/add_folder_screen.dart';
 import 'package:notes_app/models/folder_model.dart';
 
 class FoldersScreen extends StatefulWidget {

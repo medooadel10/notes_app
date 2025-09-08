@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:notes_app/screeens/add_note_screen.dart';
-import 'package:notes_app/screeens/folders_screen.dart';
+import 'package:notes_app/screens/add_note_screen.dart';
+import 'package:notes_app/screens/folders_screen.dart';
 import 'package:notes_app/models/note_model.dart';
 
 class NotesScreen extends StatefulWidget {
