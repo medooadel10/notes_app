@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:notes_app/folder_model.dart';
+import 'package:notes_app/models/folder_model.dart';
+import 'package:notes_app/widgets/custom_button.dart';
+import 'package:notes_app/widgets/custom_text_form_field.dart';
 
 class AddFolderScreen extends StatefulWidget {
   const AddFolderScreen({Key? key}) : super(key: key);
@@ -42,14 +44,9 @@ class _AddFolderScreenState extends State<AddFolderScreen> {
           child: Column(
             spacing: 16,
             children: [
-              TextFormField(
+              CustomTextFormField(
                 controller: nameController,
-                decoration: InputDecoration(
-                  hintText: 'Enter folder name',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+                hintText: 'Enter folder name',
                 keyboardType: TextInputType.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -75,22 +72,13 @@ class _AddFolderScreenState extends State<AddFolderScreen> {
                   ),
                 ),
               ),
-              ElevatedButton(
+              CustomButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
                     addFolder();
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  'Add Folder',
-                  style: TextStyle(color: Colors.white),
-                ),
+                text: 'Add Folder',
               ),
             ],
           ),

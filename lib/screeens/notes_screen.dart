@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:notes_app/add_note_screen.dart';
-import 'package:notes_app/folders_screen.dart';
-import 'package:notes_app/note_model.dart';
+import 'package:notes_app/screeens/add_note_screen.dart';
+import 'package:notes_app/screeens/folders_screen.dart';
+import 'package:notes_app/models/note_model.dart';
 
 class NotesScreen extends StatefulWidget {
   const NotesScreen({Key? key}) : super(key: key);
@@ -42,9 +42,17 @@ class _NotesScreenState extends State<NotesScreen> {
     getData();
   }
 
+  bool isDark = false;
+  void toggleDarkMode() {
+    setState(() {
+      isDark = !isDark;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: isDark ? Colors.black : Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.push(
@@ -58,7 +66,11 @@ class _NotesScreenState extends State<NotesScreen> {
         child: Icon(Icons.add),
       ),
       appBar: AppBar(
-        title: Text('Notes'),
+        title: Text(
+          'Notes',
+          style: TextStyle(color: isDark ? Colors.white : Colors.black),
+        ),
+        backgroundColor: isDark ? Colors.black : Colors.white,
         actions: [
           IconButton(
             onPressed: () {
@@ -67,7 +79,19 @@ class _NotesScreenState extends State<NotesScreen> {
                 MaterialPageRoute(builder: (context) => FoldersScreen()),
               );
             },
-            icon: Icon(Icons.folder),
+            icon: Icon(
+              Icons.folder,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              toggleDarkMode();
+            },
+            icon: Icon(
+              Icons.dark_mode,
+              color: isDark ? Colors.white : Colors.black,
+            ),
           ),
         ],
       ),
@@ -85,6 +109,10 @@ class _NotesScreenState extends State<NotesScreen> {
                       hintText: 'Search for note here...',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: isDark ? Colors.white : Colors.black,
+                          width: 3,
+                        ),
                       ),
                     ),
                     keyboardType: TextInputType.text,
@@ -156,7 +184,6 @@ class _NotesScreenState extends State<NotesScreen> {
                         horizontal: 16,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
                         border: Border(
                           left: BorderSide(color: Color(note.color), width: 3),
                         ),
@@ -178,10 +205,21 @@ class _NotesScreenState extends State<NotesScreen> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 25,
+                                    color: isDark ? Colors.white : Colors.black,
                                   ),
                                 ),
-                                Text(note.description),
-                                Text(note.createdAt.split(' ')[0]),
+                                Text(
+                                  note.description,
+                                  style: TextStyle(
+                                    color: isDark ? Colors.white : Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  note.createdAt.split(' ')[0],
+                                  style: TextStyle(
+                                    color: isDark ? Colors.white : Colors.black,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -191,7 +229,10 @@ class _NotesScreenState extends State<NotesScreen> {
                                 onPressed: () {
                                   deleteNote(index);
                                 },
-                                icon: Icon(Icons.delete),
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
                               ),
                               if (note.folder != null)
                                 Icon(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:notes_app/folder_model.dart';
-import 'package:notes_app/note_model.dart';
+import 'package:notes_app/models/folder_model.dart';
+import 'package:notes_app/models/note_model.dart';
+import 'package:notes_app/widgets/custom_button.dart';
+import 'package:notes_app/widgets/custom_text_form_field.dart';
 
 class AddNoteScreen extends StatefulWidget {
   NoteModel? noteModel;
@@ -87,14 +89,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           child: Column(
             spacing: 14,
             children: [
-              TextFormField(
+              CustomTextFormField(
                 controller: titleController,
-                decoration: InputDecoration(
-                  hintText: 'Enter note title',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+                hintText: 'Enter note title',
                 keyboardType: TextInputType.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -103,14 +100,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   return null;
                 },
               ),
-              TextFormField(
+              CustomTextFormField(
                 controller: descriptionController,
-                decoration: InputDecoration(
-                  hintText: 'Enter note description',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+                hintText: 'Enter note description',
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
                 validator: (value) {
@@ -137,7 +129,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   ),
                 ),
               ),
-              ElevatedButton(
+              CustomButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
                     if (widget.noteModel != null) {
@@ -147,17 +139,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                     }
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  widget.noteModel == null ? 'Add Note' : 'Edit Note',
-                  style: TextStyle(color: Colors.white),
-                ),
+                text: widget.noteModel == null ? 'Add Note' : 'Edit Note',
               ),
+
               SizedBox(
                 height: 70,
                 child: ListView.separated(
