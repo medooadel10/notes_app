@@ -39,6 +39,7 @@ dependencies:
   hive_generator: 
   hive_flutter: ^1.1.0
   shared_preferences: 
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:
